@@ -1,0 +1,5 @@
+pillow
+RPi.GPIO
+Adafruit-Blinka
+adafruit-circuitpython-rgb-display
+numpy
