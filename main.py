@@ -5,8 +5,37 @@ from random import randrange
 import board
 from primitives import GPIOButton, STT789Display, Font
 
+
+def read_adc():
+    adc_data = [
+        {'name': 'ADC0', 'value': 1.0},
+        {'name': 'ADC1', 'value': 2.3242}
+    ]
+    return adc_data
+
+
 def render_text(data):
-    def get_line(line_num, data):
+    line_colors = [
+        "#FF0000",
+        "#00FF00",
+        "#0000FF",
+        "#FFFF00",
+        "#FF00FF",
+        "#00FFFF",
+        "#FFFFFF",
+        "#000000",
+    ]
+    
+    def get_fps_text(data):
+        frame_ms = data['render']['elapsed']
+        if frame_ms == 0:
+            frame_ms = 1
+        fps = 1000 / frame_ms
+        text = "FPS: {} ({} ms)".format(str(round(fps, 1)), str(frame_ms))
+        color = "#F000FF"
+        return text, color
+
+    def stats_get_line(line_num, data):
         if line_num == 0:
             cmd = "hostname -I | cut -d' ' -f1"
             text = "IP: " + subprocess.check_output(cmd, shell=True).decode("utf-8")
@@ -29,12 +58,33 @@ def render_text(data):
             text = subprocess.check_output(cmd, shell=True).decode("utf-8")
             color = "#FF00FF"
         elif line_num == 5:
-            text = "Rate: " + str(data['render']['elapsed'])
-            color = "#F000FF"
+            text, color = get_fps_text(data)
         else:
             text = "Line " + str(line_num)
             color = "#{:06x}".format(randrange(0x1000000))
         return text, color
+
+    def adc_get_line(line_num, data):
+        if line_num == 0:
+            return get_fps_text(data)
+
+        adc_num = line_num-1
+        if 0 <= adc_num < len(data['adc']):
+            adc_data = data['adc'][adc_num]
+            text = "{}: {}".format(adc_data['name'], round(adc_data['value'], 3))
+            color = line_colors[adc_num % 8]
+            return text, color
+
+        return " ", "#FF0000"
+
+    def get_line(type, line_num, data):
+        if type == 'stats':
+            return stats_get_line(line_num, data)
+        elif type == 'adc':
+            return adc_get_line(line_num, data)
+        else:
+            return " ", "#FF0000"
+
 
     def print_text(text, color, font, ypos):
         display.draw.text((0, ypos), text, font=font.font(), fill=color)
@@ -42,7 +92,7 @@ def render_text(data):
     y_pos = display.top
     line = 0
     while y_pos < display.bottom:
-        text, color = get_line(line, data)
+        text, color = get_line('adc', line, data)
         text_height = font.get_height(text[0])
         if y_pos + text_height > display.bottom:
             break
@@ -71,6 +121,9 @@ if __name__ == "__main__":
         start = time.time()
         buttonA.update()
         buttonB.update()
+
+        data['adc'] = read_adc()
+
         render(data)
-        data['render']['elapsed'] = time.time() - start
+        data['render']['elapsed'] = int((time.time() - start)*1000)
         time.sleep(0.1)
