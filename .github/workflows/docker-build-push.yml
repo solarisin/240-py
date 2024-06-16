@@ -24,4 +24,4 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           push: true
-          tags: solarisin/240py:latest,solarisin/240py:$(date +%s)
+          tags: solarisin/240py:latest
