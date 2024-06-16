@@ -2,4 +2,5 @@ pillow
 RPi.GPIO
 Adafruit-Blinka
 adafruit-circuitpython-rgb-display
+adafruit-circuitpython-ads1x15
 numpy
