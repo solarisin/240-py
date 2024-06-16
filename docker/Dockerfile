@@ -15,9 +15,7 @@ COPY requirements.txt ./
 RUN pip install --no-cache-dir --upgrade pip \
   && pip install --no-cache-dir -r requirements.txt
 
-COPY main.py ./
+# use .dockerignore to exclude files from the image
+COPY . .
 
-# TODO package this somehow
-COPY primitives/ ./primitives/
-
-ENTRYPOINT ["python", "./main.py"]
+ENTRYPOINT ["python", "main.py"]
