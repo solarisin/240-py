@@ -1,4 +1,3 @@
-
 from sensor.generic import GenericChannel
 
 

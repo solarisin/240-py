@@ -1,2 +1,3 @@
 from .button import GPIOButton
-from .display import STT789Display, Font
+from .display import STT789Display
+from .font import Font

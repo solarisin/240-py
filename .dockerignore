@@ -1,6 +1,7 @@
 .git
 .venv
 .idea
+.github
 docker
 .dockerignore
 .gitignore

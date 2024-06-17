@@ -1,5 +1,10 @@
 import time
-from globals import *
+import board
+import busio
+i2c = busio.I2C(board.SCL, board.SDA)
+import adafruit_ads1x15.ads1015 as ADS
+from adafruit_ads1x15.analog_in import AnalogIn
+ads = ADS.ADS1015(i2c)
 from primitives import GPIOButton, STT789Display, Font
 from sensor.generic import NullChannel, GenericChannel
 from sensor.oilpressure import OilPressureChannel
@@ -43,9 +48,11 @@ if __name__ == "__main__":
             c.update()
             data['adc'][c.name] = c.display_text()
 
-        renderer.draw(data)
+        # renderer.draw_table(data)
+        renderer.draw_graph("OilPress", data)
         data['render']['elapsed'] = int((time.time() - start)*1000)
         time.sleep(0.1)
+        data['render']['total'] = int((time.time() - start) * 1000)
     print('Exiting render loop')
     display.clear(True)
     display.set_backlight(False)

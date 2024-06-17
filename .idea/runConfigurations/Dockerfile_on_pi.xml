@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Dockerfile on pi" type="docker-deploy" factoryName="dockerfile" server-name="Docker3">
+  <configuration default="false" name="Dockerfile on pi" type="docker-deploy" factoryName="dockerfile" server-name="240pi">
     <deployment type="dockerfile">
       <settings>
         <option name="containerName" value="" />

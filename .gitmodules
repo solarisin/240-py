@@ -1,0 +1,3 @@
+[submodule "piligraphs"]
+	path = deps/piligraphs
+	url = https://github.com/eeemoon/piligraphs.git
