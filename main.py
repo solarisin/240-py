@@ -27,6 +27,8 @@ if __name__ == "__main__":
     ]
 
     data = dict()
+    data['chart'] = dict()
+    data['chart']['length'] = 100
     data['adc'] = dict()
     data['render'] = dict()
     data['render']['elapsed'] = 0
@@ -46,7 +48,11 @@ if __name__ == "__main__":
         # update all channel data and get display text
         for c in channels:
             c.update()
-            data['adc'][c.name] = c.display_text()
+            if c.name not in data['adc']:
+                data['adc'][c.name] = dict()
+            data['adc'][c.name]['text'] = c.display_text()
+            data['adc'][c.name]['value'] = c.scaled_value
+            data['adc'][c.name]['value_avg'] = c.scaled_value_avg
 
         # renderer.draw_table(data)
         renderer.draw_graph("OilPress", data)

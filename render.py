@@ -1,11 +1,7 @@
-import random
+import numpy as np
 from PIL import Image, ImageDraw, ImageColor
-import platform, sys
-if 'arm' not in platform.processor():
-    from deps.piligraphs.piligraphs import LineChart, Node, Interpolation
-else:
-    from piligraphs import LineChart, Node, Interpolation
-
+from primitives import LineChart
+import math
 
 class Renderer:
     line_colors = [
@@ -24,6 +20,7 @@ class Renderer:
         self.font = font
         self.image = display.blank_image
         self.draw = ImageDraw.Draw(self.image)
+        self.chart = None
 
     def _get_fps_text(self, data):
         render_ms = data['render']['elapsed']
@@ -43,7 +40,7 @@ class Renderer:
 
         adc_num = line_num - 1
         if 0 <= adc_num < len(data['adc']):
-            text = data['adc'][list(data['adc'])[adc_num]]
+            text = data['adc'][list(data['adc'])[adc_num]]['text']
             color = ImageColor.getrgb(self.line_colors[adc_num % len(self.line_colors)])
             return text, color
 
@@ -75,27 +72,22 @@ class Renderer:
         if chan_name in data['adc']:
             # elements = list(data['adc'][chan_name])[-10:]
 
-            nodes = [
-                Node(weight=random.randint(1, 7)) for _ in range(10)
-            ]
+            # create a line chart if not created already
+            if self.chart is None:
+                chart_length = data['chart']['length']
+                self.chart = LineChart(
+                    size=self.display.size(),
+                    max_length=chart_length
+                )
 
-            # create a line chart
-            chart = LineChart(
-                size=self.display.size(),
-                thickness=2,
-                fill=(243, 14, 95, 156),
-                outline=(194, 43, 132, 256),
-                pwidth=6,
-                onlysrc=True,
-                npoints=len(nodes) * 8,
-                interp='cubic'
-            )
-
-            # add nodes
-            chart.add_nodes(*nodes)
+            # append value
+            value = data['adc'][chan_name]['value_avg']
+            if value is None or value is math.nan:
+                return
+            self.chart.append_data(value)
 
             # draw the graph
-            self.image = chart.draw()
+            self.image = self.chart.draw()
             self.display.set_image(self.image, update=True)
         else:
             self.display.clear()

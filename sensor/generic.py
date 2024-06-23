@@ -1,5 +1,6 @@
 import time
-
+import math
+from collections import deque
 
 class GenericChannel:
     def __init__(self, name, analog_in, unit="V"):
@@ -9,6 +10,8 @@ class GenericChannel:
         self.value = None
         self.voltage = None
         self.scaled_value = None
+        self.scaled_value_avg = None
+        self.history = deque([math.nan]*20, maxlen=20)
         self.last_update = None
 
     def update(self):

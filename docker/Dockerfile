@@ -18,7 +18,4 @@ RUN pip install --no-cache-dir --upgrade pip \
 # use .dockerignore to exclude files from the image
 COPY . .
 
-# copy piligraphs from deps
-COPY deps/piligraphs/piligraphs ./piligraphs
-
 ENTRYPOINT ["python", "main.py"]
