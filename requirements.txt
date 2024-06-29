@@ -4,7 +4,3 @@ Adafruit-Blinka
 adafruit-circuitpython-rgb-display
 adafruit-circuitpython-ads1x15
 numpy
-
-# from piligraphs
-scipy #===1.13.0
-pinkie #==0.0.1.post1

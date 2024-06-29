@@ -1,4 +1,3 @@
-import time
 import board
 import busio
 i2c = busio.I2C(board.SCL, board.SDA)
@@ -27,38 +26,21 @@ if __name__ == "__main__":
     ]
 
     data = dict()
+
+    data['channels'] = channels
+    data['buttons'] = [buttonA, buttonB]
+
     data['chart'] = dict()
     data['chart']['length'] = 100
+
     data['adc'] = dict()
+
     data['render'] = dict()
     data['render']['elapsed'] = 0
-    print('Starting render loop')
-    x = 0
-    while True:
-        x += 1
-        start = time.time()
+    data['render']['total'] = 0
 
-        a_state = buttonA.update()
-        b_state = buttonB.update()
+    # start blocking render loop
+    renderer.start(data)
 
-        # press both buttons to exit
-        if a_state and b_state:
-            break
-
-        # update all channel data and get display text
-        for c in channels:
-            c.update()
-            if c.name not in data['adc']:
-                data['adc'][c.name] = dict()
-            data['adc'][c.name]['text'] = c.display_text()
-            data['adc'][c.name]['value'] = c.scaled_value
-            data['adc'][c.name]['value_avg'] = c.scaled_value_avg
-
-        # renderer.draw_table(data)
-        renderer.draw_graph("OilPress", data)
-        data['render']['elapsed'] = int((time.time() - start)*1000)
-        time.sleep(0.1)
-        data['render']['total'] = int((time.time() - start) * 1000)
-    print('Exiting render loop')
     display.clear(True)
     display.set_backlight(False)
